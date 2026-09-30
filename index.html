@@ -1,0 +1,1069 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChronoFlex - Pro Multi-Timer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-color: #05070e;
+            --card-bg: rgba(13, 18, 30, 0.65);
+            --card-border: rgba(255, 255, 255, 0.07);
+            --card-border-hover: rgba(255, 255, 255, 0.15);
+            
+            --text-primary: #f8fafc;
+            --text-secondary: #64748b;
+            --text-muted: #475569;
+            
+            --accent-stopwatch: #10b981;
+            --accent-stopwatch-glow: rgba(16, 185, 129, 0.25);
+            
+            --accent-countdown: #f59e0b;
+            --accent-countdown-glow: rgba(245, 158, 11, 0.25);
+            
+            --primary: #6366f1;
+            --primary-hover: #4f46e5;
+            --primary-glow: rgba(99, 102, 241, 0.3);
+            
+            --danger: #ef4444;
+            --danger-glow: rgba(239, 68, 68, 0.4);
+            
+            --radius-xl: 20px;
+            --radius-lg: 14px;
+            --radius-md: 10px;
+            --radius-sm: 6px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: var(--bg-color);
+            background-image: 
+                radial-gradient(circle at 15% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 45%),
+                radial-gradient(circle at 85% 85%, rgba(16, 185, 129, 0.08) 0%, transparent 45%),
+                radial-gradient(circle at 50% 50%, rgba(245, 158, 11, 0.04) 0%, transparent 60%);
+            background-attachment: fixed;
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 2.5rem 1rem;
+            display: flex;
+            justify-content: center;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1080px;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        /* App Header */
+        header {
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .brand-logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.4rem 1rem;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            border-radius: 100px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 0.25rem;
+        }
+
+        .brand-logo svg {
+            color: var(--primary);
+        }
+
+        .brand-logo span {
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            color: var(--text-secondary);
+        }
+
+        header h1 {
+            font-size: 2.75rem;
+            font-weight: 800;
+            letter-spacing: -0.03em;
+            background: linear-gradient(135deg, #ffffff 30%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        header p {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            font-weight: 400;
+        }
+
+        /* Glass Panel Base */
+        .glass-panel {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: var(--radius-xl);
+            box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Creator Panel */
+        .creator-card {
+            padding: 1.75rem;
+        }
+
+        .creator-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1.25rem;
+            flex-wrap: wrap;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 220px;
+        }
+
+        label {
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+        }
+
+        input[type="text"], input[type="number"] {
+            background: rgba(5, 7, 14, 0.6);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            padding: 0.85rem 1rem;
+            border-radius: var(--radius-lg);
+            font-family: inherit;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.2s ease;
+        }
+
+        input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px var(--primary-glow);
+        }
+
+        .type-selector {
+            display: flex;
+            background: rgba(5, 7, 14, 0.6);
+            border: 1px solid var(--card-border);
+            padding: 4px;
+            border-radius: var(--radius-lg);
+        }
+
+        .type-btn {
+            flex: 1;
+            padding: 0.65rem;
+            border: none;
+            background: transparent;
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 0.85rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .type-btn.active {
+            background: rgba(255, 255, 255, 0.08);
+            color: #ffffff;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .time-inputs {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .time-inputs input {
+            width: 100%;
+            text-align: center;
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .presets {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+            margin-top: 0.25rem;
+        }
+
+        .preset-chip {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid var(--card-border);
+            color: var(--text-secondary);
+            padding: 0.35rem 0.75rem;
+            border-radius: 100px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .preset-chip:hover {
+            background: rgba(255, 255, 255, 0.08);
+            color: var(--text-primary);
+            border-color: rgba(255, 255, 255, 0.2);
+        }
+
+        .btn-create {
+            background: linear-gradient(135deg, var(--primary) 0%, #4338ca 100%);
+            color: white;
+            border: none;
+            padding: 0.9rem 1.5rem;
+            border-radius: var(--radius-lg);
+            font-weight: 700;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            box-shadow: 0 8px 20px var(--primary-glow);
+        }
+
+        .btn-create:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px var(--primary-glow);
+        }
+
+        /* Action Toolbar */
+        .global-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-lg);
+        }
+
+        .timer-count-badge {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: var(--text-secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--primary);
+            border-radius: 50%;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .global-controls {
+            display: flex;
+            gap: 0.5rem;
+            align-items: center;
+        }
+
+        .btn-action {
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--card-border);
+            color: var(--text-primary);
+            padding: 0.55rem 0.9rem;
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            font-size: 0.825rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .btn-action:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--card-border-hover);
+        }
+
+        .btn-action-danger {
+            color: #fca5a5;
+            background: rgba(239, 68, 68, 0.08);
+            border-color: rgba(239, 68, 68, 0.15);
+        }
+
+        .btn-action-danger:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        .btn-action-present {
+            background: rgba(99, 102, 241, 0.15);
+            border-color: rgba(99, 102, 241, 0.3);
+            color: #c7d2fe;
+        }
+
+        .btn-action-present:hover {
+            background: rgba(99, 102, 241, 0.25);
+            color: #ffffff;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        /* Timers Grid */
+        .timers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .empty-state {
+            grid-column: 1 / -1;
+            text-align: center;
+            padding: 4rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state svg {
+            opacity: 0.3;
+            color: var(--text-secondary);
+        }
+
+        /* Individual Timer Cards */
+        .timer-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: var(--radius-xl);
+            padding: 1.5rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(20px);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .timer-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: transparent;
+            transition: all 0.3s ease;
+        }
+
+        .timer-card.type-stopwatch::before {
+            background: var(--accent-stopwatch);
+        }
+
+        .timer-card.type-countdown::before {
+            background: var(--accent-countdown);
+        }
+
+        .timer-card.running.type-stopwatch {
+            box-shadow: 0 10px 30px -10px var(--accent-stopwatch-glow);
+            border-color: rgba(16, 185, 129, 0.3);
+        }
+
+        .timer-card.running.type-countdown {
+            box-shadow: 0 10px 30px -10px var(--accent-countdown-glow);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .timer-card.finished {
+            animation: pulse-danger 1.2s infinite;
+            border-color: var(--danger);
+        }
+
+        @keyframes pulse-danger {
+            0% { box-shadow: 0 0 0 0 var(--danger-glow); }
+            70% { box-shadow: 0 0 0 18px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        .timer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .timer-title {
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            letter-spacing: -0.01em;
+            word-break: break-word;
+        }
+
+        .timer-badge {
+            font-size: 0.65rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            padding: 0.25rem 0.6rem;
+            border-radius: 100px;
+            letter-spacing: 0.08em;
+            flex-shrink: 0;
+        }
+
+        .badge-stopwatch {
+            background: rgba(16, 185, 129, 0.12);
+            color: var(--accent-stopwatch);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .badge-countdown {
+            background: rgba(245, 158, 11, 0.12);
+            color: var(--accent-countdown);
+            border: 1px solid rgba(245, 158, 11, 0.2);
+        }
+
+        /* Large Digital Display with Tabular Numerals */
+        .timer-display {
+            font-family: 'Space Mono', monospace;
+            font-size: 2.75rem;
+            font-weight: 700;
+            font-variant-numeric: tabular-nums;
+            text-align: center;
+            letter-spacing: -0.04em;
+            color: #ffffff;
+            text-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
+            margin: 0.25rem 0;
+            transition: all 0.3s ease;
+        }
+
+        .timer-display .ms {
+            font-size: 1.35rem;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        /* Sleek Progress Bar */
+        .progress-bar-bg {
+            height: 5px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 100px;
+            overflow: hidden;
+        }
+
+        .progress-bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-countdown), #f97316);
+            width: 100%;
+            border-radius: 100px;
+            transition: width 0.1s linear;
+        }
+
+        /* Card Controls */
+        .timer-controls {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: auto;
+        }
+
+        .btn-card {
+            flex: 1;
+            padding: 0.65rem;
+            border: none;
+            border-radius: var(--radius-lg);
+            font-weight: 700;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.4rem;
+        }
+
+        .btn-start {
+            background: var(--accent-stopwatch);
+            color: #042f2e;
+            box-shadow: 0 4px 12px var(--accent-stopwatch-glow);
+        }
+
+        .btn-start:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+
+        .btn-pause {
+            background: var(--accent-countdown);
+            color: #451a03;
+            box-shadow: 0 4px 12px var(--accent-countdown-glow);
+        }
+
+        .btn-pause:hover {
+            filter: brightness(1.1);
+            transform: translateY(-1px);
+        }
+
+        .btn-reset {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-primary);
+            border: 1px solid var(--card-border);
+        }
+
+        .btn-reset:hover {
+            background: rgba(255, 255, 255, 0.1);
+            border-color: var(--card-border-hover);
+        }
+
+        .btn-delete {
+            background: rgba(239, 68, 68, 0.08);
+            color: var(--danger);
+            border: 1px solid rgba(239, 68, 68, 0.15);
+            padding: 0.65rem 0.85rem;
+            flex: 0;
+        }
+
+        .btn-delete:hover {
+            background: rgba(239, 68, 68, 0.2);
+            border-color: rgba(239, 68, 68, 0.3);
+        }
+
+        /* ==========================================
+           PRESENTATION / FULLSCREEN MODE STYLES
+           ========================================== */
+        body.presentation-mode {
+            padding: 1.5rem;
+            background: #020408;
+        }
+
+        body.presentation-mode header,
+        body.presentation-mode .creator-card {
+            display: none !important;
+        }
+
+        body.presentation-mode .container {
+            max-width: 100%;
+            height: 100%;
+            gap: 1.5rem;
+        }
+
+        body.presentation-mode .global-bar {
+            padding: 0.6rem 1.25rem;
+            background: rgba(13, 18, 30, 0.4);
+            border-color: rgba(255, 255, 255, 0.05);
+        }
+
+        body.presentation-mode .timers-grid {
+            grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+            gap: 1.5rem;
+            align-content: center;
+            flex: 1;
+        }
+
+        body.presentation-mode .timer-card {
+            padding: 2rem;
+            justify-content: center;
+            background: rgba(13, 18, 30, 0.8);
+            border-width: 1px;
+        }
+
+        body.presentation-mode .timer-title {
+            font-size: 1.4rem;
+        }
+
+        body.presentation-mode .timer-display {
+            font-size: 4.5rem;
+            margin: 1rem 0;
+        }
+
+        body.presentation-mode .timer-display .ms {
+            font-size: 2rem;
+        }
+
+        body.presentation-mode .btn-card {
+            padding: 0.5rem;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 640px) {
+            body { padding: 1.25rem 0.75rem; }
+            header h1 { font-size: 2.2rem; }
+            .form-row { flex-direction: column; }
+            .global-bar { flex-direction: column; gap: 1rem; align-items: stretch; }
+            .global-controls { justify-content: space-between; flex-wrap: wrap; }
+            body.presentation-mode .timer-display { font-size: 3rem; }
+            body.presentation-mode .timer-display .ms { font-size: 1.4rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <!-- App Header -->
+        <header>
+            <div class="brand-logo">
+                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <span>ChronoFlex Studio</span>
+            </div>
+            <h1>Multi-Timer & Stopwatch</h1>
+            <p>High-precision parallel time tracking for tasks, workouts, and presentations</p>
+        </header>
+
+        <!-- New Timer Creator Panel -->
+        <div class="glass-panel creator-card">
+            <form id="timerForm" class="creator-form">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Timer Label</label>
+                        <input type="text" id="timerTitle" placeholder="e.g. Sprint Review, Focus Work..." maxlength="32">
+                    </div>
+                    <div class="form-group">
+                        <label>Timer Mode</label>
+                        <div class="type-selector">
+                            <button type="button" class="type-btn active" id="btnModeStopwatch" onclick="setMode('stopwatch')">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Stopwatch
+                            </button>
+                            <button type="button" class="type-btn" id="btnModeCountdown" onclick="setMode('countdown')">
+                                <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                Countdown
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Countdown Duration Inputs -->
+                <div class="form-group" id="countdownInputsGroup" style="display: none;">
+                    <label>Duration (HH : MM : SS)</label>
+                    <div class="time-inputs">
+                        <input type="number" id="inputHours" min="0" max="99" value="0" placeholder="00">
+                        <span style="color: var(--text-secondary); font-weight: bold;">:</span>
+                        <input type="number" id="inputMins" min="0" max="59" value="5" placeholder="05">
+                        <span style="color: var(--text-secondary); font-weight: bold;">:</span>
+                        <input type="number" id="inputSecs" min="0" max="59" value="0" placeholder="00">
+                    </div>
+                    
+                    <div class="presets">
+                        <span style="font-size: 0.75rem; color: var(--text-muted); align-self: center; font-weight: 600;">Presets:</span>
+                        <button type="button" class="preset-chip" onclick="applyPreset(0, 1, 0)">1m</button>
+                        <button type="button" class="preset-chip" onclick="applyPreset(0, 5, 0)">5m</button>
+                        <button type="button" class="preset-chip" onclick="applyPreset(0, 15, 0)">15m</button>
+                        <button type="button" class="preset-chip" onclick="applyPreset(0, 25, 0)">25m Pomodoro</button>
+                        <button type="button" class="preset-chip" onclick="applyPreset(1, 0, 0)">1h</button>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn-create">
+                    <svg width="18" height="18" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                    Create Timer
+                </button>
+            </form>
+        </div>
+
+        <!-- Action Bar -->
+        <div class="glass-panel global-bar">
+            <div class="timer-count-badge">
+                <div class="status-dot"></div>
+                <span id="activeCountText">0 Active Timers</span>
+            </div>
+            <div class="global-controls">
+                <button class="btn-action" onclick="globalStartAll()">
+                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                    Start All
+                </button>
+                <button class="btn-action" onclick="globalPauseAll()">
+                    <svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg>
+                    Pause All
+                </button>
+                <button class="btn-action btn-action-danger" onclick="globalClearAll()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    Clear
+                </button>
+                <button class="btn-action btn-action-present" id="btnPresentation" onclick="togglePresentationMode()">
+                    <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 8V4m0 0h4M4 4l5 5m11-1V4m0 0h-4m4 0l-5 5M4 16v4m0 0h4m-4 0l5-5m11 5l-5-5m5 5v-4m0 4h-4"></path></svg>
+                    <span id="presentBtnText">Presentation</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Timers Display Grid -->
+        <div id="timersGrid" class="timers-grid">
+            <div class="empty-state glass-panel">
+                <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                <p style="font-weight: 600; font-size: 1.05rem;">No Timers Created Yet</p>
+                <p style="font-size: 0.85rem; max-width: 320px;">Use the creation form above to configure your first stopwatch or countdown.</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'stopwatch';
+        let timers = [];
+        let autoIncrementId = 1;
+
+        // UI Mode Switching
+        function setMode(mode) {
+            currentMode = mode;
+            const btnStopwatch = document.getElementById('btnModeStopwatch');
+            const btnCountdown = document.getElementById('btnModeCountdown');
+            const countdownInputs = document.getElementById('countdownInputsGroup');
+
+            if (mode === 'stopwatch') {
+                btnStopwatch.classList.add('active');
+                btnCountdown.classList.remove('active');
+                countdownInputs.style.display = 'none';
+            } else {
+                btnCountdown.classList.add('active');
+                btnStopwatch.classList.remove('active');
+                countdownInputs.style.display = 'flex';
+            }
+        }
+
+        function applyPreset(h, m, s) {
+            document.getElementById('inputHours').value = h;
+            document.getElementById('inputMins').value = m;
+            document.getElementById('inputSecs').value = s;
+        }
+
+        // Presentation Mode Handlers
+        function togglePresentationMode() {
+            if (!document.body.classList.contains('presentation-mode')) {
+                enterPresentationMode();
+            } else {
+                exitPresentationMode();
+            }
+        }
+
+        function enterPresentationMode() {
+            document.body.classList.add('presentation-mode');
+            document.getElementById('presentBtnText').innerText = "Exit";
+            
+            if (document.documentElement.requestFullscreen) {
+                document.documentElement.requestFullscreen().catch(err => console.log(err));
+            }
+        }
+
+        function exitPresentationMode() {
+            document.body.classList.remove('presentation-mode');
+            document.getElementById('presentBtnText').innerText = "Presentation";
+
+            if (document.fullscreenElement && document.exitFullscreen) {
+                document.exitFullscreen().catch(err => console.log(err));
+            }
+        }
+
+        document.addEventListener('fullscreenchange', () => {
+            if (!document.fullscreenElement && document.body.classList.contains('presentation-mode')) {
+                document.body.classList.remove('presentation-mode');
+                document.getElementById('presentBtnText').innerText = "Presentation";
+            }
+        });
+
+        // Timer Creation
+        document.getElementById('timerForm').addEventListener('submit', (e) => {
+            e.preventDefault();
+
+            const titleInput = document.getElementById('timerTitle');
+            let name = titleInput.value.trim();
+
+            if (!name) {
+                name = currentMode === 'stopwatch' ? `Stopwatch #${autoIncrementId}` : `Countdown #${autoIncrementId}`;
+            }
+
+            let initialMs = 0;
+            if (currentMode === 'countdown') {
+                const hrs = parseInt(document.getElementById('inputHours').value) || 0;
+                const mins = parseInt(document.getElementById('inputMins').value) || 0;
+                const secs = parseInt(document.getElementById('inputSecs').value) || 0;
+                initialMs = (hrs * 3600 + mins * 60 + secs) * 1000;
+
+                if (initialMs <= 0) {
+                    alert("Please set a countdown duration greater than 0 seconds.");
+                    return;
+                }
+            }
+
+            const timer = {
+                id: Date.now().toString(),
+                name: name,
+                type: currentMode,
+                elapsedMs: 0,
+                initialMs: initialMs,
+                remainingMs: initialMs,
+                isRunning: false,
+                isFinished: false,
+                lastTimestamp: null
+            };
+
+            timers.push(timer);
+            autoIncrementId++;
+            titleInput.value = '';
+
+            renderTimers();
+        });
+
+        // Time Formatting Helper
+        function formatTimeComponents(ms) {
+            if (ms < 0) ms = 0;
+            const hrs = Math.floor(ms / 3600000);
+            const mins = Math.floor((ms % 3600000) / 60000);
+            const secs = Math.floor((ms % 60000) / 1000);
+            const millis = Math.floor((ms % 1000) / 10);
+
+            const pad = n => n.toString().padStart(2, '0');
+            return {
+                main: `${pad(hrs)}:${pad(mins)}:${pad(secs)}`,
+                ms: pad(millis)
+            };
+        }
+
+        // Render Timers
+        function renderTimers() {
+            const grid = document.getElementById('timersGrid');
+            document.getElementById('activeCountText').innerText = `${timers.length} Active Timer${timers.length !== 1 ? 's' : ''}`;
+
+            if (timers.length === 0) {
+                grid.innerHTML = `
+                    <div class="empty-state glass-panel">
+                        <svg width="48" height="48" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        <p style="font-weight: 600; font-size: 1.05rem;">No Timers Created Yet</p>
+                        <p style="font-size: 0.85rem; max-width: 320px;">Use the creation form above to configure your first stopwatch or countdown.</p>
+                    </div>`;
+                return;
+            }
+
+            grid.innerHTML = '';
+
+            timers.forEach(t => {
+                const card = document.createElement('div');
+                card.className = `timer-card type-${t.type} ${t.isRunning ? 'running' : ''} ${t.isFinished ? 'finished' : ''}`;
+                card.id = `card-${t.id}`;
+
+                const currentMs = t.type === 'stopwatch' ? t.elapsedMs : t.remainingMs;
+                const time = formatTimeComponents(currentMs);
+
+                const progressBarHtml = t.type === 'countdown' ? `
+                    <div class="progress-bar-bg">
+                        <div class="progress-bar-fill" id="progress-${t.id}" style="width: ${t.initialMs > 0 ? (t.remainingMs / t.initialMs) * 100 : 0}%"></div>
+                    </div>
+                ` : '';
+
+                card.innerHTML = `
+                    <div class="timer-header">
+                        <span class="timer-title">${escapeHtml(t.name)}</span>
+                        <span class="timer-badge badge-${t.type}">${t.type}</span>
+                    </div>
+
+                    <div class="timer-display" id="display-${t.id}">
+                        ${time.main}<span class="ms">.${time.ms}</span>
+                    </div>
+
+                    ${progressBarHtml}
+
+                    <div class="timer-controls">
+                        <button class="btn-card ${t.isRunning ? 'btn-pause' : 'btn-start'}" onclick="toggleTimer('${t.id}')">
+                            ${t.isRunning ? 
+                                `<svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z"/></svg> Pause` : 
+                                `<svg width="14" height="14" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg> Start`}
+                        </button>
+                        <button class="btn-card btn-reset" onclick="resetTimer('${t.id}')">
+                            <svg width="14" height="14" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg> Reset
+                        </button>
+                        <button class="btn-card btn-delete" title="Delete Timer" onclick="deleteTimer('${t.id}')">
+                            <svg width="16" height="16" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                        </button>
+                    </div>
+                `;
+
+                grid.appendChild(card);
+            });
+        }
+
+        // Actions
+        function toggleTimer(id) {
+            const timer = timers.find(t => t.id === id);
+            if (!timer) return;
+
+            if (timer.isFinished) {
+                resetTimer(id);
+            }
+
+            timer.isRunning = !timer.isRunning;
+            timer.lastTimestamp = performance.now();
+            renderTimers();
+        }
+
+        function resetTimer(id) {
+            const timer = timers.find(t => t.id === id);
+            if (!timer) return;
+
+            timer.isRunning = false;
+            timer.isFinished = false;
+            timer.elapsedMs = 0;
+            timer.remainingMs = timer.initialMs;
+            renderTimers();
+        }
+
+        function deleteTimer(id) {
+            timers = timers.filter(t => t.id !== id);
+            renderTimers();
+        }
+
+        function globalStartAll() {
+            const now = performance.now();
+            timers.forEach(t => {
+                if (!t.isFinished) {
+                    t.isRunning = true;
+                    t.lastTimestamp = now;
+                }
+            });
+            renderTimers();
+        }
+
+        function globalPauseAll() {
+            timers.forEach(t => t.isRunning = false);
+            renderTimers();
+        }
+
+        function globalClearAll() {
+            if (timers.length === 0) return;
+            if (confirm("Are you sure you want to clear all timers?")) {
+                timers = [];
+                renderTimers();
+            }
+        }
+
+        // Engine Animation Loop
+        function tick() {
+            const now = performance.now();
+
+            timers.forEach(t => {
+                if (!t.isRunning) return;
+
+                const delta = now - t.lastTimestamp;
+                t.lastTimestamp = now;
+
+                if (t.type === 'stopwatch') {
+                    t.elapsedMs += delta;
+                } else {
+                    t.remainingMs -= delta;
+                    if (t.remainingMs <= 0) {
+                        t.remainingMs = 0;
+                        t.isRunning = false;
+                        t.isFinished = true;
+                        triggerAlarm();
+                    }
+                }
+
+                updateTimerDisplayDOM(t);
+            });
+
+            requestAnimationFrame(tick);
+        }
+
+        function updateTimerDisplayDOM(t) {
+            const displayEl = document.getElementById(`display-${t.id}`);
+            if (displayEl) {
+                const currentMs = t.type === 'stopwatch' ? t.elapsedMs : t.remainingMs;
+                const time = formatTimeComponents(currentMs);
+                displayEl.innerHTML = `${time.main}<span class="ms">.${time.ms}</span>`;
+            }
+
+            if (t.type === 'countdown') {
+                const progressEl = document.getElementById(`progress-${t.id}`);
+                if (progressEl && t.initialMs > 0) {
+                    const percentage = Math.max(0, (t.remainingMs / t.initialMs) * 100);
+                    progressEl.style.width = `${percentage}%`;
+                }
+            }
+
+            if (t.isFinished) {
+                const cardEl = document.getElementById(`card-${t.id}`);
+                if (cardEl && !cardEl.classList.contains('finished')) {
+                    cardEl.classList.add('finished');
+                    renderTimers();
+                }
+            }
+        }
+
+        // Web Audio Chime Alarm
+        function triggerAlarm() {
+            try {
+                const AudioContext = window.AudioContext || window.webkitAudioContext;
+                if (!AudioContext) return;
+                const ctx = new AudioContext();
+
+                const playBeep = (time, freq) => {
+                    const osc = ctx.createOscillator();
+                    const gain = ctx.createGain();
+                    osc.type = 'sine';
+                    osc.frequency.setValueAtTime(freq, time);
+                    gain.gain.setValueAtTime(0.2, time);
+                    gain.gain.exponentialRampToValueAtTime(0.0001, time + 0.35);
+                    osc.connect(gain);
+                    gain.connect(ctx.destination);
+                    osc.start(time);
+                    osc.stop(time + 0.35);
+                };
+
+                const now = ctx.currentTime;
+                playBeep(now, 880);         // A5
+                playBeep(now + 0.15, 1046.50);   // C6
+                playBeep(now + 0.30, 1318.51);   // E6
+            } catch (e) {
+                console.warn("Audio Context blocked or unsupported.", e);
+            }
+        }
+
+        function escapeHtml(str) {
+            return str.replace(/[&<>"']/g, function(m) {
+                return {
+                    '&': '&amp;',
+                    '<': '&lt;',
+                    '>': '&gt;',
+                    '"': '&quot;',
+                    "'": '&#039;'
+                }[m];
+            });
+        }
+
+        requestAnimationFrame(tick);
+    </script>
+</body>
+</html>
